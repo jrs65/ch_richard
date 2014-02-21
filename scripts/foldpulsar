@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+"""Fold a pulsar.
+
+Usage:
+    foldpulsar [-g <gates>] [-r <rebin>] <period> <dm> <outfile> <datafile>...
+    foldpulsar (-h | --help)
+
+Options:
+    -g <gates>  Number of gates to use. [default: 64]
+    -r <rebin>  Amount to rebin in time. [default: 1000]
+"""
+
+from docopt import docopt
+
+if __name__ == '__main__':
+
+    args = docopt(__doc__)
+
+    import numpy as np
+
+    from ch_richard import rfi, pulsar, dataset
+
+    files = args['<datafile>']
+    dm = float(args['<dm>'])
+    p0 = float(args['<period>'])
+    outfile = args['<outfile>']
+    gates = int(args['-g'])
+    rebin = int(args['-r'])
+
+    # Load data
+    md = dataset.MPIDataset.from_files(files)
+
+    # Mask out RFI
+    md = rfi.mask_rfi(md)
+
+    # Attach frequencies to file.
+    md.global_freq = np.linspace(800.0, 400.0, 1024)
+
+    # Fold on the pulsar
+    fp = pulsar.fold_pulsar(md, p0, dm, ngate=gates, ntrebin=rebin)
+
+    # Output file.
+    fp.save(outfile)
