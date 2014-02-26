@@ -24,7 +24,7 @@ def dm_delays(freq, dm, f_ref=400.0):
     return 4.148808e3 * dm * (freq**(-2) - f_ref**(-2))
 
 
-def fold_pulsar(dset, p0, dm, ngate=32, ntrebin=1000, **kwargs):
+def fold_pulsar(dset, p0, dm, ngate=32, ntrebin=1000):
     """Folds pulsar into nbins after dedispersing it.
 
     Parameters
@@ -42,7 +42,7 @@ def fold_pulsar(dset, p0, dm, ngate=32, ntrebin=1000, **kwargs):
 
     Returns
     -------
-    profile : np.ndarray[nfreq, nprod, ngate, ntime]
+    profile : MPIDataset[nfreq, nprod, ngate, ntime]
         Folded pulse profile of length nbins
     """
 
